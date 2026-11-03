@@ -1,103 +1,255 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import Campana from '@/components/Campana';
+import Buscador from '@/components/Buscador';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabase';
+import { normalizarItem, type ItemInventario } from '@/lib/tipos';
+import TablaInventario, { type Transito } from '@/components/TablaInventario';
+import Menu from '@/components/Menu';
+import { NOMBRE_ROL, useSesion } from '@/lib/sesion';
+
+const pesos = new Intl.NumberFormat('es-CO', {
+  style: 'currency',
+  currency: 'COP',
+  maximumFractionDigits: 0,
+});
+
+export default function TableroInventario() {
+  const router = useRouter();
+  const sesion = useSesion();
+  const [correo, setCorreo] = useState<string | null>(null);
+  const [items, setItems] = useState<ItemInventario[]>([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [busqueda, setBusqueda] = useState('');
+  const [soloBajoMinimo, setSoloBajoMinimo] = useState(false);
+  const [categoria, setCategoria] = useState('');
+  const [enVivo, setEnVivo] = useState(false);
+  const [transito, setTransito] = useState<Transito | undefined>(undefined);
+
+  // Lee la vista v_inventario (RLS: solo funciona con sesión iniciada)
+  const cargarInventario = useCallback(async () => {
+    const { data, error } = await supabase
+      .from('v_inventario')
+      .select('*')
+      .order('nombre', { ascending: true });
+
+    if (error) {
+      setError(`No se pudo cargar el inventario: ${error.message}`);
+    } else {
+      setError(null);
+      setItems((data ?? []).map(normalizarItem));
+    }
+    setCargando(false);
+  }, []);
+
+  // 1. Verificar sesión; si no hay, enviar al login
+  useEffect(() => {
+    let montado = true;
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (!montado) return;
+      if (!data.session) {
+        router.replace('/login');
+        return;
+      }
+      setCorreo(data.session.user.email ?? null);
+      cargarInventario();
+    });
+
+    const { data: escucha } = supabase.auth.onAuthStateChange((_evento, sesion) => {
+      if (!sesion) router.replace('/login');
+    });
+
+    return () => {
+      montado = false;
+      escucha.subscription.unsubscribe();
+    };
+  }, [router, cargarInventario]);
+
+  // Mercancía en tránsito (solo administrador)
+  useEffect(() => {
+    if (!sesion.esAdmin) return;
+    supabase
+      .from('v_transito_producto')
+      .select('producto_id, en_transito, llega')
+      .then(({ data }) =>
+        setTransito(Object.fromEntries((data ?? []).map((t) => [t.producto_id, { cantidad: Number(t.en_transito), llega: t.llega }])))
+      );
+  }, [sesion.esAdmin, items]);
+
+  // 2. Tiempo real: cuando cambia la tabla stock, recargar
+  useEffect(() => {
+    if (!correo) return;
+
+    const canal = supabase
+      .channel('tablero-stock')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'stock' }, () => {
+        cargarInventario();
+      })
+      .subscribe((estado) => setEnVivo(estado === 'SUBSCRIBED'));
+
+    return () => {
+      supabase.removeChannel(canal);
+    };
+  }, [correo, cargarInventario]);
+
+  const filtrados = useMemo(() => {
+    const texto = busqueda.trim().toLowerCase();
+    return items.filter((item) => {
+      if (categoria && (item.categoria ?? 'Sin categoría') !== categoria) return false;
+      if (soloBajoMinimo && !item.bajo_minimo) return false;
+      if (!texto) return true;
+      return [item.nombre, item.sku, item.codigo_barras, item.categoria ?? '']
+        .some((campo) => campo.toLowerCase().includes(texto));
+    });
+  }, [items, busqueda, soloBajoMinimo, categoria]);
+
+  const categorias = useMemo(
+    () => [...new Set(items.map((i) => i.categoria ?? 'Sin categoría'))].sort((a, b) => a.localeCompare(b, 'es')),
+    [items]
+  );
+
+  // El resumen se recalcula según la categoría escogida
+  const resumen = useMemo(() => {
+    const base = categoria ? items.filter((i) => (i.categoria ?? 'Sin categoría') === categoria) : items;
+    return {
+      referencias: new Set(base.map((i) => i.producto_id)).size,
+      bajoMinimo: base.filter((i) => i.bajo_minimo).length,
+      valor: base.reduce((total, i) => total + i.valor_total, 0),
+      enTransito: transito ? new Set(base.filter((i) => transito[i.producto_id]).map((i) => i.producto_id)).size : 0,
+    };
+  }, [items, categoria, transito]);
+
+  async function cerrarSesion() {
+    await supabase.auth.signOut();
+    router.replace('/login');
+  }
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <main className="mx-auto max-w-6xl px-4 pb-16 pt-6 sm:px-6">
+      {/* Encabezado */}
+      <header className="flex flex-wrap items-end justify-between gap-4 border-b-2 border-tinta pb-4">
+        <div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-blaster.png" alt="Blaster by Poliway" className="h-9 w-auto" />
+          <h1 className="text-3xl font-bold leading-tight sm:text-4xl">Inventario Poliway</h1>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+        <div className="flex flex-wrap items-center gap-3 text-sm text-acero sm:gap-4">
+          <span className="flex items-center gap-1.5" title="Los cambios de stock aparecen solos">
+            <span
+              aria-hidden
+              className={`inline-block h-2 w-2 rounded-full ${enVivo ? 'bg-poli' : 'bg-linea'}`}
+            />
+            {enVivo ? 'En vivo' : 'Conectando'}
+          </span>
+          {sesion.listo && (
+            <span className="hidden sm:inline">
+              {sesion.nombre} <span className="text-acero">({NOMBRE_ROL[sesion.rol]})</span>
+            </span>
+          )}
+          <Buscador />
+          <Campana />
+          <button
+            onClick={cerrarSesion}
+            className="rounded border border-tinta px-3 py-1.5 font-medium text-tinta hover:bg-tinta hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tinta"
+          >
+            Cerrar sesión
+          </button>
+        </div>
+      </header>
+
+      {sesion.listo && <Menu rol={sesion.rol} />}
+
+      {/* Resumen */}
+      <dl className={`grid border-y border-linea py-4 text-sm ${sesion.esAdmin ? 'grid-cols-2 gap-y-3 sm:grid-cols-4' : 'grid-cols-2'}`}>
+        <div>
+          <dt className="text-acero">Referencias</dt>
+          <dd className="text-2xl font-semibold tabular-nums">{resumen.referencias}</dd>
+        </div>
+        <div>
+          <dt className="text-acero">Bajo el mínimo</dt>
+          <dd className={`text-2xl font-semibold tabular-nums ${resumen.bajoMinimo > 0 ? 'text-alerta' : ''}`}>
+            {resumen.bajoMinimo}
+          </dd>
+        </div>
+        {sesion.esAdmin && (
+          <div>
+            <dt className="text-acero">Productos en tránsito</dt>
+            <dd className="text-2xl font-semibold tabular-nums text-oro-oscuro">{resumen.enTransito}</dd>
+          </div>
+        )}
+        {sesion.esAdmin && (
+          <div>
+            <dt className="text-acero">Valor total en bodega{categoria ? ` (${categoria})` : ''}</dt>
+            <dd className="text-2xl font-semibold tabular-nums">{pesos.format(resumen.valor)}</dd>
+          </div>
+        )}
+      </dl>
+
+      {/* Filtros */}
+      <div className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center">
+        <label className="flex-1">
+          <span className="sr-only">Buscar producto</span>
+          <input
+            type="search"
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            placeholder="Buscar por nombre, SKU o código"
+            className="w-full rounded border border-linea bg-white px-3 py-2.5 text-base placeholder:text-acero/70 focus:border-poli focus:outline-none focus:ring-2 focus:ring-poli/30"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+        </label>
+        <label>
+          <span className="sr-only">Filtrar por categoría</span>
+          <select
+            id="filtro-categoria"
+            value={categoria}
+            onChange={(e) => setCategoria(e.target.value)}
+            className="w-full rounded border border-linea bg-white px-3 py-2.5 text-base focus:border-poli focus:outline-none focus:ring-2 focus:ring-poli/30 sm:w-56"
+          >
+            <option value="">Todas las categorías</option>
+            {categorias.map((c) => (
+              <option key={c}>{c}</option>
+            ))}
+          </select>
+        </label>
+        <button
+          onClick={() => setSoloBajoMinimo((v) => !v)}
+          aria-pressed={soloBajoMinimo}
+          className={`rounded border px-4 py-2.5 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tinta ${
+            soloBajoMinimo
+              ? 'border-alerta bg-alerta text-white'
+              : 'border-linea bg-white text-tinta hover:border-alerta'
+          }`}
         >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          Solo bajo el mínimo ({resumen.bajoMinimo})
+        </button>
+      </div>
+
+      {/* Contenido */}
+      {cargando ? (
+        <p className="py-12 text-center text-acero">Cargando inventario…</p>
+      ) : error ? (
+        <div className="rounded border border-alerta bg-alerta-suave p-4">
+          <p className="font-medium text-alerta">{error}</p>
+          <button onClick={cargarInventario} className="mt-3 font-semibold text-tinta underline">
+            Reintentar
+          </button>
+        </div>
+      ) : items.length === 0 ? (
+        <p className="py-12 text-center text-acero">
+          Aún no hay productos registrados. Agréguelos en Supabase o con la carga masiva desde Excel.
+        </p>
+      ) : filtrados.length === 0 ? (
+        <p className="py-12 text-center text-acero">
+          Ningún producto coincide con la búsqueda{categoria ? ` en ${categoria}` : ''}
+          {soloBajoMinimo ? ' entre los que están bajo el mínimo' : ''}.
+        </p>
+      ) : (
+        <TablaInventario items={filtrados} verCostos={sesion.esAdmin} transito={sesion.esAdmin ? transito : undefined} />
+      )}
+    </main>
   );
 }
