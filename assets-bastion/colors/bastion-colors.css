@@ -1,0 +1,19 @@
+/* Bastión — variables de color de marca (v1.0) */
+:root {
+  /* Primarios */
+  --bastion-orange: #FF6A00;      /* rgb(255 106 0)  — núcleo del isotipo, acento */
+  --bastion-charcoal: #17191C;    /* rgb(23 25 28)   — fondo principal, contorno interior */
+  --bastion-warm-white: #F4F1EA;  /* rgb(244 241 234) — anillo del escudo sobre oscuro */
+
+  /* Soporte de interfaz */
+  --bastion-ui-white: #FAFAFA;    /* rgb(250 250 250) — fondo claro de interfaz */
+  --bastion-steel: #8C929A;       /* rgb(140 146 154) — texto secundario, bordes */
+
+  /* Alias semánticos */
+  --bastion-bg-dark: var(--bastion-charcoal);
+  --bastion-bg-light: var(--bastion-ui-white);
+  --bastion-fg-on-dark: var(--bastion-warm-white);
+  --bastion-fg-on-light: var(--bastion-charcoal);
+  --bastion-accent: var(--bastion-orange);
+  --bastion-muted: var(--bastion-steel);
+}
