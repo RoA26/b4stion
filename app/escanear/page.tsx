@@ -10,6 +10,7 @@ import SelectorUbicacion from '@/components/SelectorUbicacion';
 import { cargarCatalogo, porCodigo, type ProductoBasico } from '@/lib/catalogo';
 import { leerMonto } from '@/lib/formato';
 import { decirAlAsistente, useOrdenVoz } from '@/lib/voz/bus';
+import Marca from '@/components/Marca';
 
 /* ----------------------------- Tipos ----------------------------- */
 
@@ -348,8 +349,7 @@ export default function Escanear() {
     <main className="mx-auto max-w-xl px-4 pb-16 pt-5">
       <header className="flex items-end justify-between gap-4 border-b-2 border-tinta pb-3">
         <div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-blaster.png" alt="Blaster by Poliway" className="h-9 w-auto" />
+          <Marca />
           <h1 className="text-3xl font-bold leading-tight">Inventario</h1>
           <p className="text-sm text-acero">Entradas y salidas</p>
         </div>

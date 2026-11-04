@@ -1,4 +1,4 @@
-// Exporta informes a Excel (.xlsx) y PDF con la identidad Blaster by Poliway.
+// Exporta informes a Excel (.xlsx) y PDF con la identidad Bastión.
 // Las librerías se cargan solo al presionar el botón, para que la app abra rápido.
 
 export type TipoColumna = 'texto' | 'numero' | 'moneda' | 'fecha';
@@ -17,10 +17,10 @@ export interface Informe<T> {
   totales?: { etiqueta: string; valor: string }[];
 }
 
-const NEGRO = '111111';
-const AMARILLO = 'FFBD59';
-const GRIS = '575757';
-const GRIS_CLARO = 'F2F2F2';
+const NEGRO = '17191C';
+const NARANJA = 'FF6A00';
+const GRIS = '5A6068';
+const GRIS_CLARO = 'F4F1EA';
 
 const fmtNumero = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 3 });
 const fmtMoneda = new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 });
@@ -43,7 +43,7 @@ export function textoCelda(tipo: TipoColumna, v: string | number | Date | null):
 
 export async function logoDataUrl(): Promise<string | null> {
   try {
-    const r = await fetch('/logo-blaster.png');
+    const r = await fetch('/marca/logo-documentos.png');
     const b = await r.blob();
     return await new Promise((ok) => {
       const lector = new FileReader();
@@ -74,7 +74,7 @@ const sello = () => new Date().toISOString().slice(0, 10);
 export async function exportarExcel<T>(inf: Informe<T>) {
   const ExcelJS = (await import('exceljs')).default;
   const libro = new ExcelJS.Workbook();
-  libro.creator = 'Inventario Poliway';
+  libro.creator = 'Bastión · Inventario Poliway';
   // Excel no acepta * ? : \ / [ ] en el nombre de una hoja
   const hoja = libro.addWorksheet(inf.titulo.replace(/[*?:\\/[\]]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 30) || 'Informe', {
     views: [{ state: 'frozen', ySplit: 6 + inf.detalle.length }],
@@ -109,7 +109,7 @@ export async function exportarExcel<T>(inf: Informe<T>) {
   }
   // Franja amarilla de la marca
   hoja.mergeCells(r, 1, r, nCol);
-  hoja.getCell(r, 1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF' + AMARILLO } };
+  hoja.getCell(r, 1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF' + NARANJA } };
   hoja.getRow(r).height = 4;
   r++;
 
@@ -205,12 +205,12 @@ export async function exportarPdf<T>(inf: Informe<T>) {
   y += 6;
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
-  doc.setTextColor(87, 87, 87);
+  doc.setTextColor(90, 96, 104);
   for (const linea of inf.detalle) {
     doc.text(linea, margen, y);
     y += 4.5;
   }
-  doc.setFillColor(255, 189, 89);
+  doc.setFillColor(255, 106, 0);
   doc.rect(margen, y, ancho - margen * 2, 1.2, 'F');
   y += 4;
 
@@ -221,16 +221,16 @@ export async function exportarPdf<T>(inf: Informe<T>) {
     margin: { left: margen, right: margen, bottom: 16 },
     head: [inf.columnas.map((c) => c.titulo)],
     body: inf.filas.map((f) => inf.columnas.map((c) => textoCelda(c.tipo, c.valor(f)))),
-    styles: { font: 'helvetica', fontSize: 8, cellPadding: 1.8, textColor: [17, 17, 17], lineColor: [217, 217, 217], lineWidth: 0.1 },
-    headStyles: { fillColor: [17, 17, 17], textColor: [255, 255, 255], fontStyle: 'bold' },
-    alternateRowStyles: { fillColor: [242, 242, 242] },
+    styles: { font: 'helvetica', fontSize: 8, cellPadding: 1.8, textColor: [23, 25, 28], lineColor: [217, 217, 217], lineWidth: 0.1 },
+    headStyles: { fillColor: [23, 25, 28], textColor: [255, 255, 255], fontStyle: 'bold' },
+    alternateRowStyles: { fillColor: [244, 241, 234] },
     columnStyles: Object.fromEntries(
       inf.columnas.map((c, i) => [i, { cellWidth: (c.ancho / total) * util, halign: c.tipo === 'numero' || c.tipo === 'moneda' ? 'right' : 'left' }])
     ),
     didDrawPage: () => {
       doc.setFontSize(8);
-      doc.setTextColor(87, 87, 87);
-      doc.text('Inventario Poliway  |  Blaster by Poliway', margen, alto - 7);
+      doc.setTextColor(90, 96, 104);
+      doc.text('Bastión  |  Inventario Poliway', margen, alto - 7);
     },
   });
 
@@ -257,7 +257,7 @@ export async function exportarPdf<T>(inf: Informe<T>) {
     doc.setPage(i);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
-    doc.setTextColor(87, 87, 87);
+    doc.setTextColor(90, 96, 104);
     doc.text(`Página ${i} de ${paginas}`, ancho - margen, alto - 7, { align: 'right' });
   }
 

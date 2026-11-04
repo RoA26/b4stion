@@ -277,7 +277,7 @@ export default function ConteoFisico() {
           {abierto && (
             <section aria-label="Contar" className="space-y-3">
               <label className="flex items-center gap-3 rounded-lg border border-linea bg-white p-3">
-                <input type="checkbox" checked={sumarUno} onChange={(e) => setSumarUno(e.target.checked)} className="h-5 w-5 accent-[#111111]" />
+                <input type="checkbox" checked={sumarUno} onChange={(e) => setSumarUno(e.target.checked)} className="h-5 w-5 accent-[#17191C]" />
                 <span>
                   <span className="block font-semibold">Cada lectura suma 1</span>
                   <span className="block text-sm text-acero">Útil con la pistola: se lee cada pieza una por una.</span>

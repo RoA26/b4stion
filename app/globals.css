@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
-/* Identidad Blaster by Poliway (tomada del catálogo):
-   negro, grises y amarillo dorado */
+/* Identidad Bastión (assets-bastion/colors): carbón, naranja y blanco cálido.
+   Los nombres de los tokens se conservan para no tocar cada pantalla. */
 @theme {
-  --color-concreto: #F4F4F3;    /* fondo */
-  --color-tinta: #111111;       /* negro: textos y botones principales */
-  --color-acero: #575757;       /* gris oscuro: textos secundarios */
-  --color-linea: #D9D9D9;       /* gris claro: bordes */
-  --color-poli: #FFBD59;        /* amarillo Blaster: acentos y entradas */
-  --color-oro-oscuro: #8A5A00;  /* amarillo oscuro para texto sobre fondo claro */
+  --color-concreto: #F4F1EA;    /* blanco cálido: fondo */
+  --color-tinta: #17191C;       /* carbón: textos y botones principales */
+  --color-acero: #5A6068;       /* gris acero oscurecido (AA sobre fondo claro): textos secundarios */
+  --color-linea: #DCD8CF;       /* borde cálido */
+  --color-poli: #FF6A00;        /* naranja Bastión: acentos (nunca como texto sobre claro) */
+  --color-oro-oscuro: #A84300;  /* naranja oscuro: texto de acento sobre fondo claro (AA) */
   --color-alerta: #B3261E;
   --color-alerta-suave: #FBEAE8;
 }

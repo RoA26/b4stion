@@ -9,6 +9,7 @@ import { leerMonto, numero, pesos, UNIDADES } from '@/lib/formato';
 import { useSesion } from '@/lib/sesion';
 import { decirAlAsistente, useOrdenVoz } from '@/lib/voz/bus';
 import { ARMADO, NOTA_ARMADO, NOTA_GENERAL, PIEZAS } from '@/lib/voz/conocimiento';
+import Marca from '@/components/Marca';
 
 /* Despiece interactivo de los cañones Blaster:
    - los números del dibujo (①, ②…) y las piezas se pueden tocar
@@ -208,8 +209,7 @@ export default function DespieceCanones() {
     <main className="mx-auto max-w-7xl px-4 pb-16 pt-6 sm:px-6">
       <header className="flex flex-wrap items-end justify-between gap-4 border-b-2 border-tinta pb-4">
         <div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-blaster.png" alt="Blaster by Poliway" className="h-9 w-auto" />
+          <Marca />
           <h1 className="text-3xl font-bold leading-tight sm:text-4xl">Despiece de cañones</h1>
         </div>
         <div className="flex flex-wrap gap-2 text-sm">
@@ -310,10 +310,10 @@ export default function DespieceCanones() {
                   }}
                   className={`absolute rounded border-2 transition-colors ${
                     activa
-                      ? 'z-10 border-[#FFBD59] bg-[#FFBD59]/30 shadow-[0_0_0_3px_rgba(255,189,89,0.35)]'
+                      ? 'z-10 border-[#FF6A00] bg-[#FF6A00]/30 shadow-[0_0_0_3px_rgba(255,106,0,0.35)]'
                       : delGrupo
-                        ? 'border-[#FFBD59] bg-[#FFBD59]/15'
-                        : 'border-transparent hover:border-[#FFBD59]/70'
+                        ? 'border-[#FF6A00] bg-[#FF6A00]/15'
+                        : 'border-transparent hover:border-[#FF6A00]/70'
                   }`}
                   style={{ left: `${z.x}%`, top: `${z.y}%`, width: `${z.w}%`, height: `${z.h}%` }}
                 />
@@ -339,10 +339,10 @@ export default function DespieceCanones() {
                   }}
                   className={`absolute z-20 flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 text-sm font-bold transition ${
                     activa
-                      ? 'scale-110 border-tinta bg-[#FFBD59] text-tinta shadow-lg'
+                      ? 'scale-110 border-tinta bg-[#FF6A00] text-tinta shadow-lg'
                       : enGrupo(g.n)
-                        ? 'border-[#FFBD59] bg-[#FFBD59]/40 text-transparent'
-                        : 'border-transparent text-transparent hover:border-[#FFBD59] hover:bg-[#FFBD59]/30'
+                        ? 'border-[#FF6A00] bg-[#FF6A00]/40 text-transparent'
+                        : 'border-transparent text-transparent hover:border-[#FF6A00] hover:bg-[#FF6A00]/30'
                   } focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-tinta`}
                   style={{ left: `${g.x}%`, top: `${g.y}%` }}
                 >
@@ -368,7 +368,7 @@ export default function DespieceCanones() {
                   }}
                 >
                   <p className="font-bold leading-snug">
-                    <span className="mr-1 text-[#FFBD59]">{p.n}</span>
+                    <span className="mr-1 text-[#FF6A00]">{p.n}</span>
                     {p.nombre}
                   </p>
                   <p className="font-mono text-xs text-white/70">{p.sku}</p>
@@ -637,7 +637,7 @@ function Ficha({
             {CANONES[canon].nombre} · pieza {pieza.n} · {GRUPOS[pieza.grupo]}
           </p>
           <h2 className="text-xl font-bold leading-snug">{pieza.nombre}</h2>
-          <p className="font-mono text-sm text-[#FFBD59]">{pieza.sku}</p>
+          <p className="font-mono text-sm text-[#FF6A00]">{pieza.sku}</p>
         </div>
         <button onClick={onCerrar} aria-label="Cerrar la ficha" className="rounded px-2 text-2xl leading-none hover:bg-white/10">
           ×

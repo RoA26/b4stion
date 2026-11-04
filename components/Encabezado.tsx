@@ -2,14 +2,14 @@ import Link from 'next/link';
 import type { ReactNode } from 'react';
 import Campana from '@/components/Campana';
 import Buscador from '@/components/Buscador';
+import Marca from '@/components/Marca';
 
 // Encabezado común de las pantallas: logo, título y regreso al inventario
 export default function Encabezado({ titulo, children }: { titulo: string; children?: ReactNode }) {
   return (
     <header className="flex flex-wrap items-end justify-between gap-4 border-b-2 border-tinta pb-4">
       <div>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/logo-blaster.png" alt="Blaster by Poliway" className="h-9 w-auto" />
+        <Marca />
         <h1 className="mt-2 text-3xl font-bold leading-tight sm:text-4xl">{titulo}</h1>
       </div>
       <div className="flex flex-wrap gap-2 text-sm">

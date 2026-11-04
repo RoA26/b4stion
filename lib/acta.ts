@@ -34,7 +34,7 @@ export async function descargarActa(a: DatosActa) {
   if (logo) doc.addImage(logo, 'PNG', m, y, 44, 13.8);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
-  doc.setTextColor(87, 87, 87);
+  doc.setTextColor(90, 96, 104);
   doc.text(`Acta N.° ${a.id}`, ancho - m, y + 5, { align: 'right' });
   doc.setFont('helvetica', 'normal');
   doc.text(fechaLarga(a.fecha), ancho - m, y + 10, { align: 'right' });
@@ -45,7 +45,7 @@ export async function descargarActa(a: DatosActa) {
   doc.setTextColor(17, 17, 17);
   doc.text(a.sentido === 'SALIDA' ? 'ACTA DE PRÉSTAMO DE MERCANCÍA' : 'ACTA DE RECIBO DE MERCANCÍA EN PRÉSTAMO', m, y);
   y += 3;
-  doc.setFillColor(255, 189, 89);
+  doc.setFillColor(255, 106, 0);
   doc.rect(m, y, ancho - m * 2, 1.2, 'F');
   y += 10;
 
@@ -131,8 +131,8 @@ export async function descargarActa(a: DatosActa) {
   doc.text('Poliway', x2, y + 15);
 
   doc.setFontSize(8);
-  doc.setTextColor(87, 87, 87);
-  doc.text('Inventario Poliway  |  Blaster by Poliway', m, doc.internal.pageSize.getHeight() - 10);
+  doc.setTextColor(90, 96, 104);
+  doc.text('Bastión  |  Inventario Poliway', m, doc.internal.pageSize.getHeight() - 10);
 
   const limpio = a.empresa.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^\w]+/g, '_').slice(0, 30);
   doc.save(`acta_prestamo_${a.id}_${limpio}.pdf`);

@@ -385,14 +385,14 @@ export async function descargarInspeccionPdf(d: DatosInspeccion) {
     if (logo) doc.addImage(logo, 'PNG', m, 8, 38, 12);
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7.5);
-    doc.setTextColor(87, 87, 87);
+    doc.setTextColor(90, 96, 104);
     doc.text(pdfTxt(`ISO 9001 · ${DOC}`), ancho - m, 10, { align: 'right' });
     doc.text(`Inspección N.° ${d.id}`, ancho - m, 13.5, { align: 'right' });
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(ronda ? 13 : 11.5);
     doc.setTextColor(17, 17, 17);
     doc.text(ronda ? 'CHECK-LIST DIARIO - CAÑONES DE AIRE' : 'INSPECCIÓN DE CAÑÓN - HOJA DE VIDA', m + 44, 19);
-    doc.setFillColor(255, 189, 89);
+    doc.setFillColor(255, 106, 0);
     doc.rect(m, 22, ancho - m * 2, 1, 'F');
   };
   encabezado();
@@ -430,14 +430,14 @@ export async function descargarInspeccionPdf(d: DatosInspeccion) {
   y += adv.length * 3.4 + 3;
 
   const estilos = {
-    styles: { font: 'helvetica', fontSize: 7.5, cellPadding: 1.3, textColor: [17, 17, 17], lineColor: [217, 217, 217], lineWidth: 0.1 },
-    headStyles: { fillColor: [17, 17, 17], textColor: [255, 255, 255], fontStyle: 'bold' },
+    styles: { font: 'helvetica', fontSize: 7.5, cellPadding: 1.3, textColor: [23, 25, 28], lineColor: [217, 217, 217], lineWidth: 0.1 },
+    headStyles: { fillColor: [23, 25, 28], textColor: [255, 255, 255], fontStyle: 'bold' },
     margin: { left: m, right: m, top: 28, bottom: 14 },
     didDrawPage: () => {
       encabezado();
       doc.setFontSize(7);
-      doc.setTextColor(87, 87, 87);
-      doc.text('Inventario Poliway  |  Blaster by Poliway', m, alto - 7);
+      doc.setTextColor(90, 96, 104);
+      doc.text('Bastión  |  Inventario Poliway', m, alto - 7);
     },
     didParseCell: (c: { section: string; cell: { raw: unknown; styles: { textColor: number[]; fontStyle: string } } }) => {
       if (c.section === 'body' && c.cell.raw === 'X') {
@@ -556,7 +556,7 @@ export async function descargarInspeccionPdf(d: DatosInspeccion) {
   for (let i = 1; i <= paginas; i++) {
     doc.setPage(i);
     doc.setFontSize(7);
-    doc.setTextColor(87, 87, 87);
+    doc.setTextColor(90, 96, 104);
     doc.text(`Página ${i} de ${paginas}`, ancho - m, alto - 7, { align: 'right' });
   }
   const limpio = d.cliente.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^\w]+/g, '_').slice(0, 30);

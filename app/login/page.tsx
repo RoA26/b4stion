@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import Marca from '@/components/Marca';
 
 export default function Login() {
   const router = useRouter();
@@ -37,8 +38,7 @@ export default function Login() {
   return (
     <main className="flex min-h-dvh items-center justify-center px-4">
       <form onSubmit={entrar} className="w-full max-w-sm border-t-4 border-poli bg-white p-6 shadow-sm">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-blaster.png" alt="Blaster by Poliway" className="h-9 w-auto" />
+        <Marca className="mb-5" />
         <h1 className="mb-6 text-2xl font-bold">Ingresar al inventario</h1>
 
         <label className="mb-4 block">

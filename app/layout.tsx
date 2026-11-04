@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Barlow } from 'next/font/google';
 import './globals.css';
 import AsistenteVoz from '@/components/AsistenteVoz';
@@ -11,8 +11,21 @@ const barlow = Barlow({
 });
 
 export const metadata: Metadata = {
-  title: 'Inventario Poliway',
-  description: 'Control de inventario de bandas, cauchos y accesorios',
+  title: { default: 'Bastión · Inventario Poliway', template: '%s · Bastión' },
+  description: 'Bastión: control de inventario, préstamos e inspecciones de Poliway',
+  applicationName: 'Bastión',
+  manifest: '/site.webmanifest',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '48x48' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/apple-touch-icon-180.png',
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#17191C',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

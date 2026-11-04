@@ -71,14 +71,14 @@ export default function MiniDespiece({ ver, onAbrir }: { ver: Ver; onAbrir: (c: 
             width={(z.w / 100) * W}
             height={(z.h / 100) * H}
             rx={4}
-            fill="rgba(255,189,89,0.35)"
-            stroke="#FFBD59"
+            fill="rgba(255,106,0,0.35)"
+            stroke="#FF6A00"
             strokeWidth={3}
             vectorEffect="non-scaling-stroke"
           />
         ))}
         {globos.map((g, i) => (
-          <circle key={i} cx={(g.x / 100) * W} cy={(g.y / 100) * H} r={Math.max(W, H) * 0.018} fill="rgba(255,189,89,0.55)" stroke="#111" strokeWidth={2} vectorEffect="non-scaling-stroke" />
+          <circle key={i} cx={(g.x / 100) * W} cy={(g.y / 100) * H} r={Math.max(W, H) * 0.018} fill="rgba(255,106,0,0.55)" stroke="#17191C" strokeWidth={2} vectorEffect="non-scaling-stroke" />
         ))}
       </svg>
       <span className="flex items-center justify-between gap-2 border-t border-linea px-3 py-1.5 text-xs">

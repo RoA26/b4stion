@@ -48,36 +48,36 @@ async function enviar(forzar: boolean) {
   const filas = alertas
     .map(
       (a) => `<tr>
-        <td style="padding:6px 8px;border-bottom:1px solid #D9D9D9;font-family:monospace">${escapar(a.sku)}</td>
-        <td style="padding:6px 8px;border-bottom:1px solid #D9D9D9">${escapar(a.nombre)}</td>
-        <td style="padding:6px 8px;border-bottom:1px solid #D9D9D9;text-align:right;color:${a.cantidad <= 0 ? '#B3261E' : '#111'};font-weight:bold">${numero.format(a.cantidad)}</td>
-        <td style="padding:6px 8px;border-bottom:1px solid #D9D9D9;text-align:right">${numero.format(a.minimo)}</td>
-        <td style="padding:6px 8px;border-bottom:1px solid #D9D9D9;text-align:right">${numero.format(a.pedir)}</td>
-        <td style="padding:6px 8px;border-bottom:1px solid #D9D9D9;text-align:right">${a.valor ? pesos.format(a.valor) : ''}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid #DCD8CF;font-family:monospace">${escapar(a.sku)}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid #DCD8CF">${escapar(a.nombre)}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid #DCD8CF;text-align:right;color:${a.cantidad <= 0 ? '#B3261E' : '#17191C'};font-weight:bold">${numero.format(a.cantidad)}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid #DCD8CF;text-align:right">${numero.format(a.minimo)}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid #DCD8CF;text-align:right">${numero.format(a.pedir)}</td>
+        <td style="padding:6px 8px;border-bottom:1px solid #DCD8CF;text-align:right">${a.valor ? pesos.format(a.valor) : ''}</td>
       </tr>`
     )
     .join('');
-  const html = `<div style="font-family:Arial,sans-serif;color:#111;max-width:720px">
-    <div style="height:6px;background:#FFBD59"></div>
-    <h2 style="margin:16px 0 4px">Inventario Poliway: ${alertas.length} productos en el mínimo o por debajo</h2>
-    <p style="color:#575757;margin:0 0 16px">Se sugiere pedir hasta completar el doble del mínimo. Valores sin IVA.</p>
+  const html = `<div style="font-family:Arial,sans-serif;color:#17191C;max-width:720px">
+    <div style="height:6px;background:#FF6A00"></div>
+    <h2 style="margin:16px 0 4px">Bastión: ${alertas.length} productos en el mínimo o por debajo</h2>
+    <p style="color:#5A6068;margin:0 0 16px">Se sugiere pedir hasta completar el doble del mínimo. Valores sin IVA.</p>
     ${
       alertas.length
         ? `<table style="border-collapse:collapse;width:100%;font-size:14px">
-      <tr style="background:#111;color:#fff"><th style="padding:8px;text-align:left">Código</th><th style="padding:8px;text-align:left">Producto</th><th style="padding:8px;text-align:right">Hay</th><th style="padding:8px;text-align:right">Mínimo</th><th style="padding:8px;text-align:right">Pedir</th><th style="padding:8px;text-align:right">Valor</th></tr>
+      <tr style="background:#17191C;color:#fff"><th style="padding:8px;text-align:left">Código</th><th style="padding:8px;text-align:left">Producto</th><th style="padding:8px;text-align:right">Hay</th><th style="padding:8px;text-align:right">Mínimo</th><th style="padding:8px;text-align:right">Pedir</th><th style="padding:8px;text-align:right">Valor</th></tr>
       ${filas}</table>`
         : '<p>No hay productos bajo el mínimo. Todo en orden.</p>'
     }
-    <p style="color:#575757;font-size:12px;margin-top:24px">Correo automático de Inventario Poliway (Blaster by Poliway).</p>
+    <p style="color:#5A6068;font-size:12px;margin-top:24px">Correo automático de Bastión · Inventario Poliway.</p>
   </div>`;
 
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${llave}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from: process.env.ALERTA_REMITENTE || 'Inventario Poliway <onboarding@resend.dev>',
+      from: process.env.ALERTA_REMITENTE || 'Bastión <onboarding@resend.dev>',
       to: destinos,
-      subject: alertas.length ? `Stock bajo: ${alertas.length} productos por reponer` : 'Inventario Poliway: sin alertas de stock',
+      subject: alertas.length ? `Stock bajo: ${alertas.length} productos por reponer` : 'Bastión: sin alertas de stock',
       html,
     }),
   });

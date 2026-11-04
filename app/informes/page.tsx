@@ -9,6 +9,7 @@ import { exportarExcel, exportarPdf, textoCelda, type Columna, type Informe } fr
 import { cargarCatalogo } from '@/lib/catalogo';
 import { dejarPedidoPendiente } from '@/lib/archivoPendiente';
 import { tokenSesion, useSesion } from '@/lib/sesion';
+import Marca from '@/components/Marca';
 
 /* ----------------------------- Tipos ----------------------------- */
 
@@ -518,8 +519,7 @@ export default function Informes() {
     <main className="mx-auto max-w-7xl px-4 pb-16 pt-6 sm:px-6">
       <header className="flex flex-wrap items-end justify-between gap-4 border-b-2 border-tinta pb-4">
         <div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-blaster.png" alt="Blaster by Poliway" className="h-9 w-auto" />
+          <Marca />
           <h1 className="mt-2 text-3xl font-bold leading-tight sm:text-4xl">Informes</h1>
         </div>
         <Link href="/" className="rounded border border-tinta px-3 py-1.5 text-sm font-medium hover:bg-tinta hover:text-white">

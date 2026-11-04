@@ -82,7 +82,7 @@ export default function Importar() {
     hoja.columns = COLUMNAS.map((c) => ({ header: c.titulo, width: c.clave === 'nombre' ? 40 : 18 }));
     hoja.getRow(1).eachCell((c) => {
       c.font = { bold: true, color: { argb: 'FFFFFFFF' } };
-      c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF111111' } };
+      c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF17191C' } };
     });
     hoja.addRow(['BT-PVC-600-2L', 'Banda transportadora PVC 600 mm 2 lonas', 'Bandas transportadoras', 'M', 120, 185000, 20, 'Bodega principal', '']);
     hoja.addRow(['CUC-PU-1500', 'Cuchilla de poliuretano 1500 mm', 'Cuchillas y accesorios', 'UND', 8, 95000, 5, 'Bodega principal', '']);

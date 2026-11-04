@@ -9,6 +9,7 @@ import { normalizarItem, type ItemInventario } from '@/lib/tipos';
 import TablaInventario, { type Transito } from '@/components/TablaInventario';
 import Menu from '@/components/Menu';
 import { NOMBRE_ROL, useSesion } from '@/lib/sesion';
+import Marca from '@/components/Marca';
 
 const pesos = new Intl.NumberFormat('es-CO', {
   style: 'currency',
@@ -133,9 +134,8 @@ export default function TableroInventario() {
       {/* Encabezado */}
       <header className="flex flex-wrap items-end justify-between gap-4 border-b-2 border-tinta pb-4">
         <div>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-blaster.png" alt="Blaster by Poliway" className="h-9 w-auto" />
-          <h1 className="text-3xl font-bold leading-tight sm:text-4xl">Inventario Poliway</h1>
+          <Marca />
+          <h1 className="text-3xl font-bold leading-tight sm:text-4xl">Inventario</h1>
         </div>
         <div className="flex flex-wrap items-center gap-3 text-sm text-acero sm:gap-4">
           <span className="flex items-center gap-1.5" title="Los cambios de stock aparecen solos">
